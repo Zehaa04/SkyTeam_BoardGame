@@ -3,6 +3,7 @@ package model;
 import model.tasks.Task;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
 
 public class Game {
@@ -55,7 +56,7 @@ public class Game {
         boolean placedDie = false;
 
         for (int diceValue : rolledValues) {
-            for (Task task : board.getAvailableTasks(player.getRole())) {
+            for (Task task : board.getAvailableTasks(new HashSet<>(List.of(player.getRole())))) {
                 if (player.contributeToTask(diceValue, task)) {
                     placedDie = true;
                     break;
