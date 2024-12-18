@@ -16,8 +16,8 @@ public class Game {
 
     public Game(Plan plan) throws IOException {
         this.board = new Board(plan);
-        this.pilot = new Pilot();
-        this.copilot = new Copilot();
+        this.pilot = new Player(Role.PILOT);
+        this.copilot = new Player(Role.COPILOT);
         this.altitude = new Altitude();
     }
 

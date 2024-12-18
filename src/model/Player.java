@@ -4,7 +4,7 @@ import model.tasks.Task;
 
 import java.util.List;
 
-public abstract class Player {
+public class Player {
 
     protected Role role;
     protected Board board;
