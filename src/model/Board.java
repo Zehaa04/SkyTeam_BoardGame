@@ -17,6 +17,7 @@ public class Board {
     private int currentPosition;
     private int currentAxis;
     private int currentSpeed;
+    private Altitude altitude;
     private final Set<Role> pilotSet = new HashSet<>(List.of(Role.PILOT));
     private final Set<Role> copilotSet = new HashSet<>(List.of(Role.COPILOT));
 
@@ -28,6 +29,7 @@ public class Board {
         this.brakeStrenght = 0;
         this.currentPosition = 0;
         this.currentAxis = 0;
+        this.altitude = new Altitude();
 
         SpeedTask speedTaskPilot = new SpeedTask(pilotSet); //Pre coded Sets??
         SpeedTask speedTaskCopilot = new SpeedTask(copilotSet);
@@ -159,5 +161,9 @@ public class Board {
 
     public int getCurrentSpeed() {
         return currentSpeed;
+    }
+
+    public Altitude getAltitude() {
+        return altitude;
     }
 }

@@ -12,21 +12,18 @@ public class Game {
     private Player pilot;
     private Player copilot;
 
-    private Altitude altitude;
 
     public Game(Plan plan) throws IOException {
         this.board = new Board(plan);
         this.pilot = new Player(Role.PILOT);
         this.copilot = new Player(Role.COPILOT);
-        this.altitude = new Altitude();
     }
-
 
 
     public void playRound(){
         Player playerOne;
         Player playerTwo;
-        if (altitude.getAltitude()%2==0){
+        if (board.getAltitude().getAltitude()%2==0){
             playerOne = getPilot();
             playerTwo = getCopilot();
         }else {
@@ -47,7 +44,7 @@ public class Game {
         }
 
 
-        altitude.decreaseAltitude();
+        board.getAltitude().decreaseAltitude();
 
     }
 
@@ -79,10 +76,6 @@ public class Game {
 
     public Player getCopilot() {
         return copilot;
-    }
-
-    public int getAltitude() {
-        return altitude.getAltitude();
     }
 
 
