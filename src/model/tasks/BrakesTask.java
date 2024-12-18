@@ -3,9 +3,13 @@ package model.tasks;
 import model.Board;
 import model.Role;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+
 public class BrakesTask extends Task {
     public BrakesTask(Integer... validDiceValues) {
-        super(new Role[]{Role.PILOT}, false, validDiceValues);
+        super(new HashSet<>(List.of(Role.PILOT)), false, validDiceValues);
     }
 
     @Override

@@ -3,16 +3,18 @@ package model.tasks;
 import model.Board;
 import model.Role;
 
+import java.util.*;
+
 public class SpeedTask extends Task {
 
-    public SpeedTask(Role[] allowedRoles) {
+    public SpeedTask(Set<Role> allowedRoles) {
         super(allowedRoles, true,  1, 2, 3, 4, 5, 6);
     }
 
 
     @Override
     public void triggerAction(Board board) {
-        Task[] availableTasks = board.getAvailableTasks(Role.PILOT, Role.COPILOT);
+        ArrayList<Task> availableTasks = board.getAvailableTasks(new HashSet<>(Arrays.asList(Role.PILOT, Role.COPILOT)));
 
         boolean pilotSpeedTaskUsed = false;
         boolean copilotSpeedTaskUsed = false;
@@ -23,10 +25,10 @@ public class SpeedTask extends Task {
                 SpeedTask speedTask = (SpeedTask) task;
                 if (speedTask.isUsed()) {
                     totalSpeed += speedTask.getDiceValue();
-                    if (speedTask.isRoleAllowed(new Role[]{Role.PILOT})) {
+                    if (speedTask.isRoleAllowed(new HashSet<>(List.of(Role.PILOT)))) {
                         pilotSpeedTaskUsed = true;
                     }
-                    if (speedTask.isRoleAllowed(new Role[]{Role.COPILOT})) {
+                    if (speedTask.isRoleAllowed(new HashSet<>(List.of(Role.COPILOT)))) {
                         copilotSpeedTaskUsed = true;
                     }
                 }

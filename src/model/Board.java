@@ -3,12 +3,12 @@ package model;
 import model.tasks.*;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Board {
 
-    private FlightPlan flightPlan = new FlightPlan();
+    private final FlightPlan flightPlan = new FlightPlan();
     private int coffee;
     private final List<Task> tasks;
     private int maxSpeedBorder;
@@ -17,6 +17,8 @@ public class Board {
     private int currentPosition;
     private int currentAxis;
     private int currentSpeed;
+    private final Set<Role> pilotSet = new HashSet<>(List.of(Role.PILOT));
+    private final Set<Role> copilotSet = new HashSet<>(List.of(Role.COPILOT));
 
     public Board(Plan plan) throws IOException {
         importFlightPlan(plan);
@@ -27,15 +29,15 @@ public class Board {
         this.currentPosition = 0;
         this.currentAxis = 0;
 
-        SpeedTask speedTaskPilot = new SpeedTask(new Role[]{Role.PILOT});
-        SpeedTask speedTaskCopilot = new SpeedTask(new Role[]{Role.COPILOT});
+        SpeedTask speedTaskPilot = new SpeedTask(pilotSet); //Pre coded Sets??
+        SpeedTask speedTaskCopilot = new SpeedTask(copilotSet);
 
-        AxisTask axisTaskPilot = new AxisTask(new Role[]{Role.PILOT});
-        AxisTask axisTaskCopilot = new AxisTask(new Role[]{Role.COPILOT});
+        AxisTask axisTaskPilot = new AxisTask(pilotSet);
+        AxisTask axisTaskCopilot = new AxisTask(copilotSet);
 
-        RadioTask radioTaskPilot = new RadioTask(new Role[]{Role.PILOT});
-        RadioTask radioTaskCopilot1 = new RadioTask(new Role[]{Role.COPILOT});
-        RadioTask radioTaskCopilot2 = new RadioTask(new Role[]{Role.COPILOT});
+        RadioTask radioTaskPilot = new RadioTask(pilotSet);
+        RadioTask radioTaskCopilot1 = new RadioTask(copilotSet);
+        RadioTask radioTaskCopilot2 = new RadioTask(copilotSet);
 
         BrakesTask brakesTaskPilot2 = new BrakesTask(2);
         BrakesTask brakesTaskPilot4 = new BrakesTask(4);
@@ -88,15 +90,15 @@ public class Board {
         this.coffee = coffee;
     }
 
-    public Task[] getAvailableTasks(Role... roles) { //liste zurückgeben
+    public ArrayList<Task> getAvailableTasks(Set<Role> roles) {
         return tasks.stream()
                 .filter(task -> task.isRoleAllowed(roles))
                 .filter(task -> !task.isUsed())
-                .toArray(Task[]::new);
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     public boolean contributeToTask(int diceValue, Task task, Player player) {
-        if (task.isRoleAllowed(new Role[]{player.getRole()}) && task.getDiceValue()==null && task.isDiceValueValid(diceValue) && player.getDice().getRolledValues().contains(diceValue)){
+        if (task.isRoleAllowed(new HashSet<>(List.of(player.getRole()))) && task.getDiceValue()==null && task.isDiceValueValid(diceValue) && player.getDice().getRolledValues().contains(diceValue)){
             task.setDiceValue(diceValue);
             task.setUsed(true);
             task.triggerAction(this);

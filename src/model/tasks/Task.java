@@ -14,16 +14,16 @@ public abstract class Task {
     protected boolean obligatory;
     protected Integer diceValue;
 
-    public Task(Role[] allowedRoles, boolean obligatory, Integer... validDiceValues) { //hier kein Array sondern liste nutzen
-        this.allowedRoles = new HashSet<>(Arrays.asList(allowedRoles));
+    public Task(Set<Role> allowedRoles, boolean obligatory, Integer... validDiceValues) { //hier kein Array sondern liste nutzen
+        this.allowedRoles = allowedRoles;  //OLD: new HashSet<>(Arrays.asList(allowedRoles));
         this.used = false;
         this.validDiceValues = new HashSet<>(Arrays.asList(validDiceValues));
         this.obligatory = obligatory;
         this.diceValue = null;
     }
 
-    public boolean isRoleAllowed(Role[] role) {
-        return allowedRoles.contains(role);
+    public boolean isRoleAllowed(Set<Role> roles) { //Role... roles maybe? Muss dann nicht jedes mal ein Hash bauen
+        return allowedRoles.containsAll(roles);
     }
 
     public boolean isUsed() {
@@ -36,10 +36,6 @@ public abstract class Task {
 
     public boolean isDiceValueValid(int diceValue) {
         return validDiceValues.contains(diceValue);
-    }
-
-    public Set<Integer> getValidDiceValues() {
-        return validDiceValues;
     }
 
     public boolean isObligatory() {

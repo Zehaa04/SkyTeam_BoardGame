@@ -3,15 +3,17 @@ package model.tasks;
 import model.Board;
 import model.Role;
 
+import java.util.*;
+
 public class AxisTask extends Task {
 
-    public AxisTask(Role[] allowedRoles) {
+    public AxisTask(Set<Role> allowedRoles) {
         super(allowedRoles, true, 1, 2, 3, 4, 5, 6);
     }
 
     @Override
     public void triggerAction(Board board) {
-        Task[] availableTasks = board.getAvailableTasks(Role.PILOT, Role.COPILOT);
+        ArrayList<Task> availableTasks = board.getAvailableTasks(new HashSet<>(Arrays.asList(Role.PILOT, Role.COPILOT)));
 
         Integer pilotAxisValue = null;
         Integer copilotAxisValue = null;
@@ -20,10 +22,10 @@ public class AxisTask extends Task {
             if (task instanceof AxisTask) {
                 AxisTask axisTask = (AxisTask) task;
                 if (axisTask.isUsed()) {
-                    if (axisTask.isRoleAllowed(new Role[]{Role.PILOT}) && pilotAxisValue == null) {
+                    if (axisTask.isRoleAllowed(new HashSet<>(List.of(Role.PILOT))) && pilotAxisValue == null) {
                         pilotAxisValue = axisTask.getDiceValue();
                     }
-                    if (axisTask.isRoleAllowed(new Role[]{Role.COPILOT}) && copilotAxisValue == null) {
+                    if (axisTask.isRoleAllowed(new HashSet<>(List.of(Role.COPILOT))) && copilotAxisValue == null) {
                         copilotAxisValue = axisTask.getDiceValue();
                     }
                 }

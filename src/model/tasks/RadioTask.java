@@ -3,8 +3,10 @@ package model.tasks;
 import model.Board;
 import model.Role;
 
+import java.util.Set;
+
 public class RadioTask extends Task {
-    public RadioTask(Role[] allowedRoles) {
+    public RadioTask(Set<Role> allowedRoles) {
         super(allowedRoles, false, 1, 2, 3, 4, 5, 6);
     }
 
