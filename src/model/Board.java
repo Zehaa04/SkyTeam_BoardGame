@@ -100,16 +100,31 @@ public class Board {
     }
 
     public boolean contributeToTask(int diceValue, Task task, Player player) {
-        if (task.isRoleAllowed(new HashSet<>(List.of(player.getRole()))) && task.getDiceValue()==null && task.isDiceValueValid(diceValue) && player.getDice().getRolledValues().contains(diceValue)){
+        boolean isObligatoryTask = task.isObligatory();
+        if (!isObligatoryTask && playerHasUnassignedObligatoryTasks(player)) {
+            System.out.println("You must complete obligatory tasks by the end of the round!!!!!");
+            return false;
+        }
+
+        if (task.isRoleAllowed(new HashSet<>(List.of(player.getRole())))
+                && task.getDiceValue() == null
+                && task.isDiceValueValid(diceValue)
+                && player.getDice().getRolledValues().contains(diceValue)) {
             task.setDiceValue(diceValue);
             task.setUsed(true);
             task.triggerAction(this);
             player.getDice().getRolledValues().remove((Integer) diceValue);
             return true;
-        }else {
-            return false;
         }
+        return false;
     }
+
+    private boolean playerHasUnassignedObligatoryTasks(Player player) {
+        List<Task> obligatoryTasks = player.getBoard().getAvailableTasks(new HashSet<>(List.of(player.getRole())));
+        return obligatoryTasks.stream().anyMatch(Task::isObligatory)
+                && obligatoryTasks.stream().anyMatch(task -> task.getDiceValue() == null);
+    }
+
 
     public int getBrakeStrenght() {
         return brakeStrenght;
