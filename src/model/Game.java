@@ -20,13 +20,13 @@ public class Game {
     }
 
 
-    public void playRound(){
+    public void playRound() {
         Player playerOne;
         Player playerTwo;
-        if (board.getAltitude().getAltitude()%2==0){
+        if (board.getAltitude().getAltitude() % 2 == 0) {
             playerOne = getPilot();
             playerTwo = getCopilot();
-        }else {
+        } else {
             playerOne = getCopilot();
             playerTwo = getPilot();
         }
@@ -43,10 +43,10 @@ public class Game {
             }
         }
 
-
         board.getAltitude().decreaseAltitude();
-
+        board.resetRoundSpecificTasks();
     }
+
 
     private void takeTurn(Player player) { //bis ich input von den spieler implementiere haben die Spieler keine freie Wahl was Reihenfolge von Dice angeht
         List<Integer> rolledValues = player.getDice().getRolledValues();

@@ -101,8 +101,14 @@ public class Board {
 
     public boolean contributeToTask(int diceValue, Task task, Player player) {
         boolean isObligatoryTask = task.isObligatory();
-        if (!isObligatoryTask && playerHasUnassignedObligatoryTasks(player)) {
-            System.out.println("You must complete obligatory tasks by the end of the round!!!!!");
+
+        if (mustUseObligatoryTasks(player) && !isObligatoryTask) {
+            System.out.println("You must use your remaining dice for obligatory tasks!");
+            return false;
+        }
+
+        if (isTaskOutOfOrder(task, player)) {
+            System.out.println("You must complete tasks in the correct order!");
             return false;
         }
 
@@ -116,14 +122,57 @@ public class Board {
             player.getDice().getRolledValues().remove((Integer) diceValue);
             return true;
         }
+
+        System.out.println("Invalid placement. Please choose again.");
         return false;
     }
 
-    private boolean playerHasUnassignedObligatoryTasks(Player player) {
-        List<Task> obligatoryTasks = player.getBoard().getAvailableTasks(new HashSet<>(List.of(player.getRole())));
-        return obligatoryTasks.stream().anyMatch(Task::isObligatory)
-                && obligatoryTasks.stream().anyMatch(task -> task.getDiceValue() == null);
+    private boolean mustUseObligatoryTasks(Player player) {
+        List<Task> obligatoryTasks = tasks.stream()
+                .filter(task -> task.isObligatory() && task.isRoleAllowed(new HashSet<>(List.of(player.getRole()))))
+                .toList();
+
+        int unusedObligatoryTasks = (int) obligatoryTasks.stream().filter(task -> !task.isUsed()).count();
+        int remainingDice = player.getDice().getRolledValues().size();
+
+        return remainingDice <= unusedObligatoryTasks;
     }
+
+    private boolean isTaskOutOfOrder(Task task, Player player) {
+        if (task instanceof BrakesTask || task instanceof FlapsTask) {
+            List<Task> orderedTasks = getOrderedTasks(task, player);
+            if (orderedTasks != null) {
+                int taskIndex = orderedTasks.indexOf(task);
+                if (taskIndex > 0) {
+                    Task previousTask = orderedTasks.get(taskIndex - 1);
+                    return !previousTask.isUsed();
+                }
+            }
+        }
+        return false;
+    }
+
+
+    private List<Task> getOrderedTasks(Task task, Player player) {
+        if (task instanceof BrakesTask) {
+            return tasks.stream()
+                    .filter(t -> t instanceof BrakesTask && t.isRoleAllowed(new HashSet<>(List.of(player.getRole()))))
+                    .collect(Collectors.toList());
+        } else if (task instanceof FlapsTask) {
+            return tasks.stream()
+                    .filter(t -> t instanceof FlapsTask && t.isRoleAllowed(new HashSet<>(List.of(player.getRole()))))
+                    .collect(Collectors.toList());
+        }
+        return null;
+    }
+
+
+    public void resetRoundSpecificTasks() {
+        tasks.stream()
+                .filter(task -> task instanceof SpeedTask || task instanceof AxisTask || task instanceof RadioTask || task instanceof CoffeeTask)
+                .forEach(task -> task.setUsed(false));
+    }
+
 
 
     public int getBrakeStrenght() {
