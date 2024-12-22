@@ -10,7 +10,6 @@ public class Player {
     protected Board board;
     protected Dice dice;
 
-
     public Player(Role role) {
         this.role = role;
         this.dice = new Dice();
@@ -57,5 +56,24 @@ public class Player {
     public Board getBoard() {
         return board;
     }
-}
 
+    public List<Integer> useRerollToken(int numberOfDiceToReroll) {
+        if (board.getReroll() <= 0) {
+            throw new IllegalStateException("No reroll tokens available on the board.");
+        }
+
+        if (numberOfDiceToReroll < 1 || numberOfDiceToReroll > 4) {
+            throw new IllegalArgumentException("You can reroll between 1 and 4 dice.");
+        }
+
+        board.useRerollToken();
+        List<Integer> rerolledValues = dice.rollMultiple(numberOfDiceToReroll);
+        List<Integer> currentValues = dice.getRolledValues();
+
+        for (int i = 0; i < numberOfDiceToReroll; i++) {
+            currentValues.set(i, rerolledValues.get(i));
+        }
+
+        return currentValues;
+    }
+}

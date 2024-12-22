@@ -10,6 +10,7 @@ public class Board {
 
     private final FlightPlan flightPlan = new FlightPlan();
     private int coffee;
+    private int reroll;
     private final List<Task> tasks;
     private int maxSpeedBorder;
     private int minSpeedBorder;
@@ -229,5 +230,17 @@ public class Board {
 
     public Altitude getAltitude() {
         return altitude;
+    }
+
+    public void addRerollToken() {
+        this.reroll++;
+    }
+
+    public void useRerollToken() {
+        this.reroll--;
+    }
+
+    public int getReroll() {
+        return reroll;
     }
 }

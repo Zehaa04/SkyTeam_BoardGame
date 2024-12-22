@@ -23,6 +23,9 @@ public class Game {
     public void playRound() {
         Player playerOne;
         Player playerTwo;
+        if (board.getAltitude().hasRerollToken()){
+            board.addRerollToken();
+        }
         if (board.getAltitude().getAltitude() % 2 == 0) {
             playerOne = getPilot();
             playerTwo = getCopilot();

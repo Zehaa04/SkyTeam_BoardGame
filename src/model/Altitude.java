@@ -15,4 +15,11 @@ public class Altitude {
     public int getAltitude() {
         return altitude;
     }
+
+    public boolean hasRerollToken() { //depends on plan
+        if (getAltitude() == 6000) {
+            return true;
+        }
+        return false;
+    }
 }
