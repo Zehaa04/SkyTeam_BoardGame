@@ -15,40 +15,38 @@ public class FlightPlan {
             throw new IOException("Invalid input");
         }
 
-        BufferedReader reader = new BufferedReader(new FileReader("src/main/resources/plans.txt"));
-        String line;
-        int planLength = 0;
+        try (BufferedReader reader = new BufferedReader(new FileReader("resources/plans.txt"))) {
+            String line;
+            int planLength = 0;
 
-        String name = flightPlan.getName();
+            String name = flightPlan.getName().trim();
 
-        while ((line = reader.readLine()) != null) {
-            if (line.equals(name)) {
-                reader.readLine();
-                planLength = Integer.parseInt(reader.readLine());
-                break;
-            }
-        }
+            while ((line = reader.readLine()) != null) {
+                if (line.trim().equalsIgnoreCase(name)) {
 
-        if (planLength == 0) {
-            reader.close();
-            throw new IllegalArgumentException("Plan not found!");
-        }
-
-        List<Integer> list = new ArrayList<>();
-
-        for (int i = 0; i < planLength; i++) {
-            if ((line = reader.readLine()) == null) {
-                reader.close();
-                throw new IOException("End of file");
+                    planLength = Integer.parseInt(reader.readLine().trim());
+                    break;
+                }
             }
 
-            int planes = Integer.parseInt(line);
-            list.add(planes);
-        }
+            if (planLength == 0) {
+                throw new IllegalArgumentException("Plan not found!");
+            }
 
-        reader.close();
-        flightPath = list;
+            List<Integer> list = new ArrayList<>();
+
+            for (int i = 0; i < planLength; i++) {
+                if ((line = reader.readLine()) == null) {
+                    throw new IOException("End of file reached unexpectedly");
+                }
+
+                list.add(Integer.parseInt(line.trim()));
+            }
+
+            flightPath = list;
+        }
     }
+
 
     public List<Integer> getFlightPath() {
         return flightPath;
