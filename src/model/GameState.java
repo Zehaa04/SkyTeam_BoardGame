@@ -1,6 +1,8 @@
 package model;
 
 import java.util.Arrays;
+import java.util.HashSet;
+
 import model.tasks.Task;
 
 public class GameState {
@@ -17,19 +19,21 @@ public class GameState {
     }
 
     private static boolean areAllObligatoryTasksCompleted(Game game) {
-        return Arrays.stream(game.getBoard().getAvailableTasks(Role.PILOT, Role.COPILOT))
+        return game.getBoard().getAvailableTasks(new HashSet<>(Arrays.asList(Role.PILOT, Role.COPILOT)))
+                .stream()
                 .filter(Task::isObligatory)
                 .allMatch(Task::isUsed);
     }
 
+
     private static boolean isDestinationReached(Game game) {
-        return game.getAltitude() == 0
+        return game.getBoard().getAltitude().getAltitude() == 0
                 && game.getBoard().getCurrentPosition() == game.getBoard().getFlightPlan().getFlightPath().size() - 1
                 && game.getBoard().getFlightPlan().getFlightPath().get(game.getBoard().getCurrentPosition()) == 0;
     }
 
     private static boolean isFinalRoundSpeedValid(Game game) {
-        return game.getAltitude() == 0
+        return game.getBoard().getAltitude().getAltitude() == 0
                 && game.getBoard().getCurrentSpeed() <= game.getBoard().getBrakeStrenght();
     }
 
@@ -44,6 +48,6 @@ public class GameState {
     public static boolean loseCondition(Game game) {
         return (!areAllObligatoryTasksCompleted(game) && isDestinationReached(game)) || (game.getBoard().getCurrentAxis()<-2 || game.getBoard().getCurrentAxis()>2) ||
                 (!isFinalRoundSpeedValid(game)) || (game.getBoard().getCurrentPosition()>=game.getBoard().getFlightPlan().getFlightPath().size()) ||
-                (collsion(game)) || (!isDestinationReached(game) && game.getAltitude()==0);
+                (collsion(game)) || (!isDestinationReached(game) && game.getBoard().getAltitude().getAltitude()==0);
     }
 }
