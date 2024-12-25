@@ -2,6 +2,7 @@ package model;
 
 import model.tasks.Task;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Player {
@@ -57,23 +58,30 @@ public class Player {
         return board;
     }
 
-    public List<Integer> useRerollToken(int numberOfDiceToReroll) {
-        if (board.getReroll() <= 0) {
-            throw new IllegalStateException("No reroll tokens available on the board.");
+    public List<Integer> useRerollToken(Integer... diceToReroll) {
+        if (getBoard().getReroll() <= 0) {
+            throw new IllegalStateException("No reroll tokens available on the board!!");
         }
 
-        if (numberOfDiceToReroll < 1 || numberOfDiceToReroll > 4) {
-            throw new IllegalArgumentException("You can reroll between 1 and 4 dice.");
+        List<Integer> currentValues = getDice().getRolledValues();
+        List<Integer> indicesToReroll = new ArrayList<>();
+        for (Integer value : diceToReroll) {
+            int index = currentValues.indexOf(value);
+            if (index == -1) {
+                throw new IllegalArgumentException("One or more specified dice values are not in the current rolled values!!");
+            }
+            indicesToReroll.add(index);
         }
 
-        board.useRerollToken();
-        List<Integer> rerolledValues = dice.rollMultiple(numberOfDiceToReroll);
-        List<Integer> currentValues = dice.getRolledValues();
-
-        for (int i = 0; i < numberOfDiceToReroll; i++) {
-            currentValues.set(i, rerolledValues.get(i));
+        if (diceToReroll.length > getDice().getRolledValues().size()) {
+            throw new IllegalArgumentException("you cant reroll more dices than you have!!");
         }
 
-        return currentValues;
+        getBoard().useRerollToken();
+        getDice().rerollSpecificDice(indicesToReroll);
+
+        return getDice().getRolledValues();
     }
+
+
 }

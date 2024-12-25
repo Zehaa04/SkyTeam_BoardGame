@@ -29,7 +29,17 @@ public class Dice {
         return rolls;
     }
 
-    public List<Integer> getRolledValues() {
+    public void rerollSpecificDice(List<Integer> indicesToReroll) {
+        for (int index : indicesToReroll) {
+            if (index >= 0 && index < rolledValues.size()) {
+                rolledValues.set(index, rand.nextInt(6) + 1);
+            } else {
+                throw new IllegalArgumentException("Invalid index for rerolling: " + index);
+            }
+        }
+    }
+
+    public ArrayList<Integer> getRolledValues() {
         return new ArrayList<>(rolledValues);
     }
 

@@ -2,6 +2,7 @@ import model.Dice;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -14,7 +15,6 @@ public class DiceTest {
     public void setUp() {
         dice = new Dice();
     }
-
 
     @Test
     public void testRoll() {
@@ -44,7 +44,6 @@ public class DiceTest {
     @Test
     public void testSetRolledValue() {
         dice.rollMultiple(3);
-        dice.getRolledValues();
         List<Integer> rolledValues;
 
         int index = 1;
@@ -78,5 +77,21 @@ public class DiceTest {
         for (int roll : rolledValues) {
             assertTrue(roll >= 1 && roll <= 6);
         }
+    }
+
+    @Test
+    public void testRerollSpecificDice() {
+        dice.rollMultiple(4);
+        List<Integer> initialValues = dice.getRolledValues();
+
+        List<Integer> indicesToReroll = Arrays.asList(0, 2);
+        dice.rerollSpecificDice(indicesToReroll);
+
+        List<Integer> updatedValues = dice.getRolledValues();
+
+        assertEquals(4, updatedValues.size());
+
+        assertEquals(initialValues.get(1), updatedValues.get(1));
+        assertEquals(initialValues.get(3), updatedValues.get(3));
     }
 }
