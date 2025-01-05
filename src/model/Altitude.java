@@ -4,16 +4,16 @@ public class Altitude {
 
     private int altitude;
 
-    Altitude() {
-        this.altitude = 6000;
+    public Altitude() {
+        this.altitude = 6;
     }
 
     public void decreaseAltitude() {
-        this.altitude -= 1000;
+        this.altitude -= 1;
     }
 
     public int getAltitude() {
-        return altitude;
+        return altitude*1000;
     }
 
     public boolean hasRerollToken() { //depends on plan

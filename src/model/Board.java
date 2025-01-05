@@ -21,8 +21,12 @@ public class Board {
     private Altitude altitude;
     private final Set<Role> pilotSet = new HashSet<>(List.of(Role.PILOT));
     private final Set<Role> copilotSet = new HashSet<>(List.of(Role.COPILOT));
+    private Player pilot;
+    private Player copilot;
 
     public Board(Plan plan) throws IOException {
+        this.pilot = new Player(Role.PILOT,this);
+        this.copilot = new Player(Role.COPILOT,this);
         importFlightPlan(plan);
         tasks = new ArrayList<>();
         this.maxSpeedBorder = 8;
@@ -242,5 +246,13 @@ public class Board {
 
     public int getReroll() {
         return reroll;
+    }
+
+    public Player getPilot() {
+        return pilot;
+    }
+
+    public Player getCopilot() {
+        return copilot;
     }
 }

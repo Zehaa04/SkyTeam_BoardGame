@@ -15,8 +15,8 @@ public class Game {
 
     public Game(Plan plan) throws IOException {
         this.board = new Board(plan);
-        this.pilot = new Player(Role.PILOT);
-        this.copilot = new Player(Role.COPILOT);
+        this.pilot = board.getPilot();
+        this.copilot = board.getCopilot();
     }
 
 
@@ -26,7 +26,7 @@ public class Game {
         if (board.getAltitude().hasRerollToken()){
             board.addRerollToken();
         }
-        if (board.getAltitude().getAltitude() % 2 == 0) {
+        if ((board.getAltitude().getAltitude())/1000 % 2 == 0) {
             playerOne = getPilot();
             playerTwo = getCopilot();
         } else {

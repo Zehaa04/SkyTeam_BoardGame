@@ -11,9 +11,10 @@ public class Player {
     protected Board board;
     protected Dice dice;
 
-    public Player(Role role) {
+    public Player(Role role, Board board) {
         this.role = role;
         this.dice = new Dice();
+        this.board = board;
     }
 
     public List<Integer> rollDice(int numDice) {

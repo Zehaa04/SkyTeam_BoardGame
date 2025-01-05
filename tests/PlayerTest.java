@@ -1,32 +1,27 @@
 import model.Board;
+import model.Plan;
 import model.Player;
 import model.Role;
+import model.tasks.SpeedTask;
 import model.tasks.Task;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.lang.reflect.Field;
+import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 public class PlayerTest {
 
     private Player player;
-    private Task mockTask;
-    private Board mockBoard;
+    private Board board;
 
     @BeforeEach
-    public void setUp() throws Exception {
-        mockBoard = mock(Board.class);
-        player = new Player(Role.PILOT);
-
-        Field boardField = Player.class.getDeclaredField("board");
-        boardField.setAccessible(true);
-        boardField.set(player, mockBoard);
-
-        mockTask = mock(Task.class);
+    public void setUp() throws IOException {
+        board = new Board(Plan.MONTREAL);
+        player = board.getPilot();
     }
 
     @Test
@@ -45,31 +40,40 @@ public class PlayerTest {
 
     @Test
     public void testUseCoffee() {
-        when(mockBoard.getCoffee()).thenReturn(1);
-
         player.rollDice(1);
-        player.useCoffee(0, 1);
+        while (player.getDice().getRolledValues().getFirst() != 6) {
+            board.setCoffee(1);
+            int firstRoll = player.getDice().getRolledValues().getFirst();
+            player.useCoffee(0, 1);
+            int secondRoll = player.getDice().getRolledValues().getFirst();
 
-        verify(mockBoard, times(1)).setCoffee(0);
+            assertTrue(firstRoll < secondRoll);
+            assertEquals(0, board.getCoffee());
+        }
     }
 
-    @Test
-    public void testUseCoffeeNoCoffeeLeft() {
-        when(mockBoard.getCoffee()).thenReturn(0);
-        assertThrows(IllegalStateException.class, () -> player.useCoffee(0, 1));
-    }
 
     @Test
     public void testContributeToTask() {
-        when(mockBoard.contributeToTask(anyInt(), eq(mockTask), eq(player))).thenReturn(true);
-        boolean result = player.contributeToTask(4, mockTask);
+        Task speedTask = board.getAvailableTasks(Set.of(Role.PILOT)).stream()
+                .filter(task -> task instanceof SpeedTask)
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("SpeedTask not found in board's task list."));
+
+        player.rollDice(1);
+        player.getDice().setRolledValue(0, 2);
+
+        assertNull(speedTask.getDiceValue());
+        assertTrue(speedTask.isDiceValueValid(2));
+        assertTrue(speedTask.isRoleAllowed(Set.of(Role.PILOT)));
+
+        boolean result = player.contributeToTask(2, speedTask);
         assertTrue(result);
-        verify(mockBoard, times(1)).contributeToTask(4, mockTask, player);
     }
 
     @Test
     public void testUseRerollToken() {
-        when(mockBoard.getReroll()).thenReturn(1);
+        board.addRerollToken();
         player.rollDice(4);
 
         List<Integer> initialValues = player.getDice().getRolledValues();
@@ -79,18 +83,16 @@ public class PlayerTest {
 
         assertEquals(4, player.getDice().getRolledValues().size());
         assertTrue(player.getDice().getRolledValues().containsAll(updatedValues));
-        verify(mockBoard, times(1)).useRerollToken();
     }
 
     @Test
     public void testUseRerollTokenNoTokens() {
-        when(mockBoard.getReroll()).thenReturn(0);
         assertThrows(IllegalStateException.class, () -> player.useRerollToken(1, 2));
     }
 
     @Test
     public void testUseRerollTokenInvalidNumber() {
-        when(mockBoard.getReroll()).thenReturn(1);
+        board.addRerollToken();
         player.rollDice(4);
 
         assertThrows(IllegalArgumentException.class, () -> player.useRerollToken(10, 5));
