@@ -1,0 +1,27 @@
+5. Ensure evaluation in Game class
+
+- player and board verbinden, da es durch game nicht verbunden wird:
+Konstruktor von Player: public Player(Role role, Board board) {
+                            this.role = role;
+                            this.board = board;
+                            this.dice = new Dice();
+                        }
+Konstruktor von Game: public Game(Plan plan) throws IOException {
+                          this.board = new Board(plan);
+                          this.pilot = new Player(Role.PILOT, board);
+                          this.copilot = new Player(Role.COPILOT, board);
+                      }
+
+
+- Testfälle jetzt schreiben
+
+
+
+
+
+
+//Arrays durch Listen/Sets ersetzen (sollte fertig sein aber vorsichtig)
+//Player muss nicht abstrakt sein, kann Pilot und Copilot löschen
+//Sicherstellen, dass alle Obligatory Tasks belegt sind!
+//Sicherstellen, dass Tasks, die Reihenfolge benötigen die einhalten! (Brakes, Flaps)
+//Reroll Tokens implementieren
