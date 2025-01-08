@@ -17,7 +17,7 @@ public class FlightPlan {
         }
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(
-            getClass().getClassLoader().getResourceAsStream("plans.txt")))) {
+            getClass().getResourceAsStream("plans.txt")))) {
             if (reader == null) {
                 throw new IllegalArgumentException("File not found: plans.txt");
             }
@@ -35,7 +35,7 @@ public class FlightPlan {
             }
 
             if (planLength == 0) {
-                throw new IllegalArgumentException("Plan not found!");
+                throw new IllegalArgumentException("Plan not found!!!");
             }
 
             List<Integer> list = new ArrayList<>();
