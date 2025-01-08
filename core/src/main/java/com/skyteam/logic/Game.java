@@ -38,11 +38,11 @@ public class Game {
         while (!playerOne.getDice().getRolledValues().isEmpty() || !playerTwo.getDice().getRolledValues().isEmpty()) {
             if (!playerOne.getDice().getRolledValues().isEmpty()) {
                 takeTurn(playerOne);
-                GameState.evaluateAll(this);
+                //GameState.evaluateAll(this);
             }
             if (!playerTwo.getDice().getRolledValues().isEmpty()) {
                 takeTurn(playerTwo);
-                GameState.evaluateAll(this);
+                //GameState.evaluateAll(this);
             }
         }
 
