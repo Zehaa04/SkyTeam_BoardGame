@@ -43,7 +43,7 @@ public class GameController {
     }
 
     private void exitGame() {
-        gdxGame.dispose();
+        com.badlogic.gdx.Gdx.app.exit();
     }
 
     public MainMenuScreen getMainMenuScreen() {
