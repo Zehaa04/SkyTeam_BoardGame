@@ -32,7 +32,7 @@ tasks.test {
 sourceSets {
   main {
     resources {
-      srcDirs = ['assets']
+      srcDirs = ['src/main/resources']
     }
   }
   test {
@@ -40,7 +40,7 @@ sourceSets {
       srcDirs = ['src/tests']
     }
     resources {
-      srcDirs = ['assets']
+      srcDirs = ['src/main/resources']
     }
   }
 }

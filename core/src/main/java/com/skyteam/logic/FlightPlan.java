@@ -1,11 +1,10 @@
 package com.skyteam.logic;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,15 +19,13 @@ public class FlightPlan {
 
         String name = flightPlan.getName().trim();
 
-        FileHandle fileHandle = Gdx.files.internal("plans.json");
-        if (!fileHandle.exists()) {
+        InputStream inputStream = getClass().getResourceAsStream("/plans.json");
+        if (inputStream == null) {
             throw new IllegalArgumentException("File not found: plans.json");
         }
 
-
         ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode rootNode = objectMapper.readTree(fileHandle.read());
-
+        JsonNode rootNode = objectMapper.readTree(inputStream);
 
         JsonNode matchingLocation = null;
         for (JsonNode locationNode : rootNode) {
@@ -42,7 +39,6 @@ public class FlightPlan {
             throw new IllegalArgumentException("Plan not found!!!");
         }
 
-
         List<Integer> list = new ArrayList<>();
         for (JsonNode valueNode : matchingLocation.get("values")) {
             list.add(valueNode.asInt());
@@ -50,6 +46,7 @@ public class FlightPlan {
 
         flightPath = list;
     }
+
 
     public List<Integer> getFlightPath() {
         return flightPath;
