@@ -11,6 +11,7 @@ public class Game {
     private Board board;
     private Player pilot;
     private Player copilot;
+    private boolean isGameRunning;
 
 
     public Game(Plan plan) throws IOException {
@@ -67,6 +68,20 @@ public class Game {
         if (!placedDie) {
             System.out.println(player.getRole() + " has no valid moves and passes their turn");
         }
+    }
+
+    public void startGame() {
+        isGameRunning = true;
+        System.out.println("Game started!");
+    }
+
+    public void endGame() {
+        isGameRunning = false;
+        System.out.println("Game ended!");
+    }
+
+    public boolean isGameRunning() {
+        return isGameRunning;
     }
 
     public Board getBoard() {

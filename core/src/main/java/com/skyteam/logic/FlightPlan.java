@@ -1,9 +1,11 @@
 package com.skyteam.logic;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,43 +18,38 @@ public class FlightPlan {
             throw new IOException("Invalid input");
         }
 
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(
-            getClass().getResourceAsStream("plans.txt")))) {
-            if (reader == null) {
-                throw new IllegalArgumentException("File not found: plans.txt");
-            }
+        String name = flightPlan.getName().trim();
 
-            String line;
-            int planLength = 0;
-
-            String name = flightPlan.getName().trim();
-
-            while ((line = reader.readLine()) != null) {
-                if (line.trim().equalsIgnoreCase(name)) {
-                    planLength = Integer.parseInt(reader.readLine().trim());
-                    break;
-                }
-            }
-
-            if (planLength == 0) {
-                throw new IllegalArgumentException("Plan not found!!!");
-            }
-
-            List<Integer> list = new ArrayList<>();
-
-            for (int i = 0; i < planLength; i++) {
-                if ((line = reader.readLine()) == null) {
-                    throw new IOException("End of file reached unexpectedly");
-                }
-
-                list.add(Integer.parseInt(line.trim()));
-            }
-
-            flightPath = list;
+        FileHandle fileHandle = Gdx.files.internal("plans.json");
+        if (!fileHandle.exists()) {
+            throw new IllegalArgumentException("File not found: plans.json");
         }
+
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode rootNode = objectMapper.readTree(fileHandle.read());
+
+
+        JsonNode matchingLocation = null;
+        for (JsonNode locationNode : rootNode) {
+            if (locationNode.get("location").asText().equalsIgnoreCase(name)) {
+                matchingLocation = locationNode;
+                break;
+            }
+        }
+
+        if (matchingLocation == null) {
+            throw new IllegalArgumentException("Plan not found!!!");
+        }
+
+
+        List<Integer> list = new ArrayList<>();
+        for (JsonNode valueNode : matchingLocation.get("values")) {
+            list.add(valueNode.asInt());
+        }
+
+        flightPath = list;
     }
-
-
 
     public List<Integer> getFlightPath() {
         return flightPath;
