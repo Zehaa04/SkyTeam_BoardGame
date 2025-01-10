@@ -20,7 +20,9 @@ public class MainMenuScreen implements Screen {
     private SpriteBatch spriteBatch;
 
     public MainMenuScreen() {
-        stage = new Stage(new FitViewport(1280, 720));
+        int viewportWidth = Gdx.graphics.getWidth();
+        int viewportHeight = Gdx.graphics.getHeight();
+        stage = new Stage(new FitViewport(viewportWidth, viewportHeight));
         skin = new Skin(Gdx.files.internal("ui/uiskin.json"));
         spriteBatch = new SpriteBatch();
         backgroundTexture = new Texture(Gdx.files.internal("skins/pic7398904.png"));
@@ -50,6 +52,8 @@ public class MainMenuScreen implements Screen {
 
     @Override
     public void show() {
+        Gdx.graphics.setWindowedMode(800, 600);
+        Gdx.graphics.setResizable(false);
         Gdx.input.setInputProcessor(stage);
     }
 

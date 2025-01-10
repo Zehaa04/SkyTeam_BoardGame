@@ -18,7 +18,9 @@ public class GameScreen implements Screen {
 
     @Override
     public void show() {
-        stage = new Stage(new FitViewport(1280, 720));
+        Gdx.graphics.setWindowedMode(Gdx.graphics.getDisplayMode().width, Gdx.graphics.getDisplayMode().height - 50);
+
+        stage = new Stage(new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
 
         boardImage = new Image(new Texture("skins/skyteam-main-board.png"));
 
@@ -32,8 +34,8 @@ public class GameScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        Gdx.gl.glClearColor(0, 0, 0, 1); // Black background
-        Gdx.gl.glClear(Gdx.gl.GL_COLOR_BUFFER_BIT); // Clear the screen
+        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClear(Gdx.gl.GL_COLOR_BUFFER_BIT);
         stage.act(delta);
         stage.draw();
     }
