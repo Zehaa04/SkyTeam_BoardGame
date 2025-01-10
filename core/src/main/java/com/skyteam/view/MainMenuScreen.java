@@ -25,10 +25,12 @@ public class MainMenuScreen implements Screen {
         startButton = new TextButton("Start Game", skin);
         quitButton = new TextButton("Quit", skin);
 
+        startButton.getLabel().setFontScale(2.0f);
+        quitButton.getLabel().setFontScale(2.0f);
 
-        table.add(startButton).pad(10);
+        table.add(startButton).pad(20).width(300).height(100);
         table.row();
-        table.add(quitButton).pad(10);
+        table.add(quitButton).pad(20).width(300).height(100);
     }
 
     public TextButton getStartButton() {
