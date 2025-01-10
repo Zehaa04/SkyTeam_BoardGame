@@ -1,11 +1,12 @@
-package com.skyteam.logic;
+package com.skyteam.model;
 
-import com.skyteam.tasks.Task;
-import com.skyteam.tasks.*;
-import com.skyteam.logic.*;
+import com.skyteam.model.tasks.*;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Board {

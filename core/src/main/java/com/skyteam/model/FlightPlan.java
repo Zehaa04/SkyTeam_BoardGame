@@ -1,4 +1,4 @@
-package com.skyteam.logic;
+package com.skyteam.model;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

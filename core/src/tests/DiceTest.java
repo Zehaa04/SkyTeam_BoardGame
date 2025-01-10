@@ -1,4 +1,4 @@
-import com.skyteam.logic.*;
+import com.skyteam.model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

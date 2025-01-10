@@ -1,8 +1,8 @@
 package com.skyteam;
 
 import com.skyteam.controller.GameController;
-import com.skyteam.logic.Game;
-import com.skyteam.logic.Plan;
+import com.skyteam.model.Game;
+import com.skyteam.model.Plan;
 
 import java.io.IOException;
 

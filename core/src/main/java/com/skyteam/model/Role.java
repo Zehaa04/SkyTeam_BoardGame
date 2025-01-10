@@ -1,4 +1,4 @@
-package com.skyteam.logic;
+package com.skyteam.model;
 
 public enum Role {
     PILOT,

@@ -1,6 +1,6 @@
-package com.skyteam.logic;
+package com.skyteam.model;
 
-import com.skyteam.tasks.*;
+import com.skyteam.model.tasks.Task;
 
 import java.util.ArrayList;
 import java.util.List;

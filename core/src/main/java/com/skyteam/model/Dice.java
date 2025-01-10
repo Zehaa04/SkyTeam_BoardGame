@@ -1,4 +1,4 @@
-package com.skyteam.logic;
+package com.skyteam.model;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,9 +1,9 @@
-package com.skyteam.logic;
+package com.skyteam.model;
+
+import com.skyteam.model.tasks.Task;
 
 import java.util.Arrays;
 import java.util.HashSet;
-
-import com.skyteam.tasks.*;
 
 public class GameState {
 

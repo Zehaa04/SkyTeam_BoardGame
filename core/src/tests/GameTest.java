@@ -1,5 +1,5 @@
-import com.skyteam.logic.*;
-import com.skyteam.tasks.*;
+import com.skyteam.model.*;
+import com.skyteam.model.tasks.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
