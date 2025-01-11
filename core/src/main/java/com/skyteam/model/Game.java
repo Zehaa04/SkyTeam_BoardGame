@@ -35,6 +35,7 @@ public class Game {
             playerTwo = getPilot();
         }
         playerOne.rollDice(4);
+        //dice verschwinden - muss von view kommen?
         playerTwo.rollDice(4);
         while (!playerOne.getDice().getRolledValues().isEmpty() || !playerTwo.getDice().getRolledValues().isEmpty()) {
             if (!playerOne.getDice().getRolledValues().isEmpty()) {

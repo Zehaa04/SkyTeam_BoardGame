@@ -1,10 +1,14 @@
 package com.skyteam.controller;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.skyteam.model.Game;
+import com.skyteam.model.Player;
 import com.skyteam.view.GameScreen;
 import com.skyteam.view.MainMenuScreen;
+
+import java.util.List;
 
 public class GameController {
     private final com.badlogic.gdx.Game gdxGame;
@@ -16,8 +20,7 @@ public class GameController {
         this.gdxGame = gdxGame;
         this.gameLogic = gameLogic;
         this.mainMenuScreen = new MainMenuScreen();
-        this.gameScreen = new GameScreen();
-
+        this.gameScreen = new GameScreen(this);
         setupListeners();
     }
 
@@ -37,6 +40,20 @@ public class GameController {
         });
     }
 
+    public void registerRollDiceButton(TextButton rollDiceButton) {
+        rollDiceButton.addListener(new ChangeListener() {
+            boolean isPilotTurn = true;
+
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                Player currentPlayer = isPilotTurn ? getGameLogic().getPilot() : getGameLogic().getCopilot();
+                List<Integer> rolledDice = currentPlayer.rollDice(4);
+                gameScreen.displayRolledDice(rolledDice, isPilotTurn);
+                isPilotTurn = !isPilotTurn;
+            }
+        });
+    }
+
     private void startGame() {
         gameLogic.startGame();
         gdxGame.setScreen(gameScreen);
@@ -52,5 +69,9 @@ public class GameController {
 
     public GameScreen getGameScreen() {
         return gameScreen;
+    }
+
+    public Game getGameLogic() {
+        return gameLogic;
     }
 }
