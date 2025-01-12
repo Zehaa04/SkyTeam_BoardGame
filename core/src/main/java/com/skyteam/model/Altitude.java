@@ -16,8 +16,8 @@ public class Altitude {
         return altitude*1000;
     }
 
-    public boolean hasRerollToken() { //depends on plan
-        if (getAltitude() == 6000) {
+    public boolean hasRerollToken() {
+        if (getAltitude() == 6000 || getAltitude() == 2000) {
             return true;
         }
         return false;
