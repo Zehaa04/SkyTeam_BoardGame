@@ -2,10 +2,8 @@ package com.skyteam.view;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -14,6 +12,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop;
+import com.badlogic.gdx.utils.JsonReader;
+import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.skyteam.controller.GameController;
 
@@ -33,14 +33,17 @@ public class GameScreen implements Screen {
     private Texture diceTexture;
     private TextureRegion[][] diceRegions;
     private DragAndDrop dragAndDrop;
-
-    private ShapeRenderer shapeRenderer;
-    private Zone testZone;
-
+    private JsonValue config;
 
     public GameScreen(GameController controller) {
         this.controller = controller;
+        loadConfig();
         show();
+    }
+
+    private void loadConfig() {
+        JsonReader jsonReader = new JsonReader();
+        config = jsonReader.parse(Gdx.files.internal("config.json"));
     }
 
     @Override
@@ -105,33 +108,9 @@ public class GameScreen implements Screen {
         diceRegions = TextureRegion.split(diceTexture, 85, 85);
 
         dragAndDrop = new DragAndDrop();
-        shapeRenderer = new ShapeRenderer();
         spriteBatch = new SpriteBatch();
 
-        testZone = new Zone(20, 307, 100, 100, Color.BLUE, "Drop Zone");
-        System.out.println("Zone initialized with bounds: " + testZone.getBounds());
-
-        stage.addActor(testZone);
-
-        dragAndDrop.addTarget(new DragAndDrop.Target(testZone) {
-            @Override
-            public boolean drag(DragAndDrop.Source source, DragAndDrop.Payload payload, float x, float y, int pointer) {
-                return true;
-            }
-
-            @Override
-            public void drop(DragAndDrop.Source source, DragAndDrop.Payload payload, float x, float y, int pointer) {
-                if (payload.getObject() instanceof TextureRegion) {
-                    TextureRegion droppedDiceFace = (TextureRegion) payload.getObject();
-                    System.out.println("Dropping dice face: " + droppedDiceFace);
-                    testZone.addDroppedDice(droppedDiceFace);
-                    System.out.println("Dice successfully added to zone.");
-                } else {
-                    System.out.println("ERROR: Payload object is not a TextureRegion!");
-                }
-            }
-
-        });
+        addDropZonesFromConfig();
 
         stage.addActor(boardImage);
         stage.addActor(altitudeTracksImage);
@@ -145,17 +124,63 @@ public class GameScreen implements Screen {
         Gdx.input.setInputProcessor(stage);
 
         controller.registerRollDiceButton(rollDiceButton);
+    }
 
+    private void addDropZonesFromConfig() {
+        for (JsonValue location : config.get("leftDiceSpots")) {
+            createDropTarget(location.getFloat("x"), location.getFloat("y"));
+        }
+        for (JsonValue location : config.get("rightDiceSpots")) {
+            createDropTarget(location.getFloat("x"), location.getFloat("y"));
+        }
+        for (JsonValue location : config.get("topCenterDiceSpots")) {
+            createDropTarget(location.getFloat("x"), location.getFloat("y"));
+        }
+        for (JsonValue location : config.get("upperCenterDiceSpots")) {
+            createDropTarget(location.getFloat("x"), location.getFloat("y"));
+        }
+        for (JsonValue location : config.get("lowerCenterDiceSpots")) {
+            createDropTarget(location.getFloat("x"), location.getFloat("y"));
+        }
+        for (JsonValue location : config.get("bottomCenterDiceSpots")) {
+            createDropTarget(location.getFloat("x"), location.getFloat("y"));
+        }
+    }
+
+    private void createDropTarget(float x, float y) {
+        float boardOffsetX = boardImage.getX();
+        float boardOffsetY = boardImage.getY();
+
+        Image dropTarget = new Image();
+        dropTarget.setSize(57, 57); // Updated size based on diceFaceSize
+        dropTarget.setPosition(boardOffsetX + x, boardOffsetY + y);
+
+        dragAndDrop.addTarget(new DragAndDrop.Target(dropTarget) {
+            @Override
+            public boolean drag(DragAndDrop.Source source, DragAndDrop.Payload payload, float x, float y, int pointer) {
+                return true;
+            }
+
+            @Override
+            public void drop(DragAndDrop.Source source, DragAndDrop.Payload payload, float x, float y, int pointer) {
+                if (payload.getObject() instanceof TextureRegion) {
+                    TextureRegion diceFace = (TextureRegion) payload.getObject();
+                    Image droppedDice = new Image(diceFace);
+                    droppedDice.setSize(57, 57); // Updated size based on diceFaceSize
+                    droppedDice.setPosition(boardOffsetX + x, boardOffsetY + y);
+                    stage.addActor(droppedDice);
+                }
+            }
+        });
+
+        stage.addActor(dropTarget);
     }
 
     private void addDragSourceForDice(Image diceImage, TextureRegion diceFace) {
-        System.out.println("Adding drag source for dice face: " + diceFace);
-
         dragAndDrop.addSource(new DragAndDrop.Source(diceImage) {
             @Override
             public DragAndDrop.Payload dragStart(InputEvent event, float x, float y, int pointer) {
                 DragAndDrop.Payload payload = new DragAndDrop.Payload();
-                System.out.println("Starting drag for dice: " + diceFace);
                 payload.setObject(diceFace);
                 payload.setDragActor(new Image(diceFace));
                 return payload;
@@ -163,16 +188,10 @@ public class GameScreen implements Screen {
         });
     }
 
-
-
     @Override
     public void render(float delta) {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(Gdx.gl.GL_COLOR_BUFFER_BIT);
-
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        testZone.drawZone(shapeRenderer,spriteBatch);
-        shapeRenderer.end();
 
         stage.act(delta);
         stage.draw();
@@ -213,7 +232,6 @@ public class GameScreen implements Screen {
         stage.dispose();
         buttonSkin.dispose();
         diceTexture.dispose();
-        shapeRenderer.dispose();
         spriteBatch.dispose();
     }
 
@@ -227,29 +245,6 @@ public class GameScreen implements Screen {
             Image diceImage = new Image(diceFace);
 
             addDragSourceForDice(diceImage, diceFace);
-
-            dragAndDrop.addTarget(new DragAndDrop.Target(diceResultTable) {
-                @Override
-                public boolean drag(DragAndDrop.Source source, DragAndDrop.Payload payload, float x, float y, int pointer) {
-                    System.out.println("Dragging over Zone: " + testZone.getName() + " | Coordinates: x=" + x + ", y=" + y);
-                    return true;
-                }
-
-
-                @Override
-                public void drop(DragAndDrop.Source source, DragAndDrop.Payload payload, float x, float y, int pointer) {
-                    System.out.println("Drop triggered at x=" + x + ", y=" + y);
-                    System.out.println("Zone bounds: " + testZone.getBounds());
-                    if (payload.getObject() instanceof TextureRegion) {
-                        TextureRegion droppedDiceFace = (TextureRegion) payload.getObject();
-                        System.out.println("Dropping dice face: " + droppedDiceFace);
-                        testZone.addDroppedDice(droppedDiceFace);
-                    } else {
-                        System.out.println("ERROR: Payload object is not a TextureRegion!");
-                    }
-                }
-
-            });
 
             diceResultTable.add(diceImage).pad(5);
         }

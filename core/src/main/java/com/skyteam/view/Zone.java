@@ -39,11 +39,9 @@ public class Zone extends Actor {
         shapeRenderer.rect(bounds.x, bounds.y, bounds.width, bounds.height);
 
         spriteBatch.begin();
-        System.out.println("Rendering " + droppedDice.size + " dice in zone " + name);
 
         for (int i = 0; i < droppedDice.size; i++) {
             TextureRegion diceFace = droppedDice.get(i);
-            System.out.println("Rendering dice face: " + diceFace);
             float diceX = bounds.x + (i * 35);
             float diceY = bounds.y + bounds.height / 2 - 15;
             spriteBatch.draw(diceFace, diceX, diceY, 30, 30);
@@ -59,22 +57,12 @@ public class Zone extends Actor {
         return bounds.contains(x, y) ? this : null;
     }
 
-    public void handleDiceDrop() {
-        System.out.println("Dice dropped in zone: " + name);
-    }
-
     public void addDroppedDice(TextureRegion diceFace) {
         if (diceFace != null) {
             droppedDice.add(diceFace);
-            System.out.println("Dice added to zone " + name + ": " + diceFace);
-            System.out.println("Current dice count in zone: " + droppedDice.size);
-        } else {
-            System.out.println("ERROR: Null dice face passed to addDroppedDice!");
         }
     }
 
 
-    public Array<TextureRegion> getDroppedDice() {
-        return droppedDice;
-    }
+
 }
