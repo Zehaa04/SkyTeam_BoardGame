@@ -4,9 +4,10 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -28,8 +29,6 @@ public class GameScreen implements Screen {
     private Skin buttonSkin;
     private GameController controller;
     private Table diceResultTable;
-    private SpriteBatch spriteBatch;
-
     private Texture diceTexture;
     private TextureRegion[][] diceRegions;
     private DragAndDrop dragAndDrop;
@@ -48,7 +47,7 @@ public class GameScreen implements Screen {
 
     @Override
     public void show() {
-        Gdx.graphics.setWindowedMode(Gdx.graphics.getDisplayMode().width, Gdx.graphics.getDisplayMode().height - 50);
+        Gdx.graphics.setWindowedMode(Gdx.graphics.getDisplayMode().width, Gdx.graphics.getDisplayMode().height-50);
         stage = new Stage(new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
 
         boardImage = new Image(new Texture("skins/skyteam-main-board.png"));
@@ -75,25 +74,8 @@ public class GameScreen implements Screen {
             boardImage.getY()
         );
 
-        Texture tokensTexture = new Texture("skins/skyteam-tokens.png");
-        TextureRegion tokenRegion = new TextureRegion(tokensTexture, 200, 0, tokensTexture.getWidth() - 200, tokensTexture.getHeight());
-
-        Image token1 = new Image(tokenRegion);
-        Image token2 = new Image(tokenRegion);
-
-        token1.setSize(50, 50);
-        token2.setSize(50, 50);
-
-        float tokenY = approachTracksImage.getY() + 718 - 118;
-        float tokenX1 = approachTracksImage.getX() + approachTracksImage.getWidth() / 2f - 55;
-        float tokenX2 = tokenX1 + 60;
-
-        token1.setPosition(tokenX1, tokenY);
-        token2.setPosition(tokenX2, tokenY);
-
         buttonSkin = new Skin(Gdx.files.internal("ui/uiskin.json"));
         rollDiceButton = new TextButton("Roll Dice", buttonSkin);
-
         rollDiceButton.setSize(200, 50);
         rollDiceButton.setPosition(
             stage.getWidth() / 2f - rollDiceButton.getWidth() / 2f,
@@ -108,15 +90,20 @@ public class GameScreen implements Screen {
         diceRegions = TextureRegion.split(diceTexture, 85, 85);
 
         dragAndDrop = new DragAndDrop();
-        spriteBatch = new SpriteBatch();
 
         addDropZonesFromConfig();
+
+        stage.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                System.out.println("Mouse clicked at: x=" + x + ", y=" + y);
+                return true;
+            }
+        });
 
         stage.addActor(boardImage);
         stage.addActor(altitudeTracksImage);
         stage.addActor(approachTracksImage);
-        stage.addActor(token1);
-        stage.addActor(token2);
         stage.addActor(rollDiceButton);
         stage.addActor(diceResultTable);
         stage.setDebugAll(true);
@@ -151,24 +138,30 @@ public class GameScreen implements Screen {
         float boardOffsetX = boardImage.getX();
         float boardOffsetY = boardImage.getY();
 
-        Image dropTarget = new Image();
-        dropTarget.setSize(57, 57); // Updated size based on diceFaceSize
+        Image dropTarget = new Image(new Texture("skins/test.png"));
+        dropTarget.setSize(60, 60);
         dropTarget.setPosition(boardOffsetX + x, boardOffsetY + y);
+        dropTarget.setTouchable(Touchable.enabled);
+
+        System.out.println("Creating drop target at: x=" + dropTarget.getX() + ", y=" + dropTarget.getY());
 
         dragAndDrop.addTarget(new DragAndDrop.Target(dropTarget) {
             @Override
             public boolean drag(DragAndDrop.Source source, DragAndDrop.Payload payload, float x, float y, int pointer) {
+                System.out.println("Dragging over: x=" + dropTarget.getX() + ", y=" + dropTarget.getY() + " | Pointer at: x=" + x + ", y=" + y);
                 return true;
             }
 
             @Override
             public void drop(DragAndDrop.Source source, DragAndDrop.Payload payload, float x, float y, int pointer) {
+                System.out.println("Drop detected at: x=" + dropTarget.getX() + ", y=" + dropTarget.getY());
                 if (payload.getObject() instanceof TextureRegion) {
                     TextureRegion diceFace = (TextureRegion) payload.getObject();
                     Image droppedDice = new Image(diceFace);
-                    droppedDice.setSize(57, 57); // Updated size based on diceFaceSize
-                    droppedDice.setPosition(boardOffsetX + x, boardOffsetY + y);
+                    droppedDice.setSize(60, 60);
+                    droppedDice.setPosition(dropTarget.getX(), dropTarget.getY());
                     stage.addActor(droppedDice);
+                    System.out.println("Dice dropped successfully.");
                 }
             }
         });
@@ -180,12 +173,43 @@ public class GameScreen implements Screen {
         dragAndDrop.addSource(new DragAndDrop.Source(diceImage) {
             @Override
             public DragAndDrop.Payload dragStart(InputEvent event, float x, float y, int pointer) {
+                System.out.println("Drag started.");
+                diceImage.setVisible(false);
+
                 DragAndDrop.Payload payload = new DragAndDrop.Payload();
                 payload.setObject(diceFace);
-                payload.setDragActor(new Image(diceFace));
+
+                Image dragActor = new Image(diceFace);
+                dragActor.setSize(60, 60);
+                dragActor.setPosition(x - dragActor.getWidth() / 2, y - dragActor.getHeight() / 2);
+                payload.setDragActor(dragActor);
+
                 return payload;
             }
+
+            @Override
+            public void dragStop(InputEvent event, float x, float y, int pointer, DragAndDrop.Payload payload, DragAndDrop.Target target) {
+                if (target == null) {
+                    System.out.println("Drag cancelled: no target.");
+                    diceImage.setVisible(true);
+                } else {
+                    System.out.println("Dice successfully dropped.");
+                }
+            }
         });
+    }
+
+    public void dropDice(int dieValue, float x, float y) {
+        float boardOffsetX = boardImage.getX();
+        float boardOffsetY = boardImage.getY();
+
+        if (dieValue < 1 || dieValue > diceRegions[0].length) return;
+
+        TextureRegion diceFace = diceRegions[0][dieValue - 1];
+        Image droppedDice = new Image(diceFace);
+        droppedDice.setSize(60, 60);
+        droppedDice.setPosition(boardOffsetX + x, boardOffsetY + y);
+        stage.addActor(droppedDice);
     }
 
     @Override
@@ -232,7 +256,6 @@ public class GameScreen implements Screen {
         stage.dispose();
         buttonSkin.dispose();
         diceTexture.dispose();
-        spriteBatch.dispose();
     }
 
     public void displayRolledDice(List<Integer> rolledDice, boolean isPilotTurn) {
@@ -243,9 +266,7 @@ public class GameScreen implements Screen {
         for (Integer dieValue : rolledDice) {
             TextureRegion diceFace = diceRegions[row][dieValue - 1];
             Image diceImage = new Image(diceFace);
-
             addDragSourceForDice(diceImage, diceFace);
-
             diceResultTable.add(diceImage).pad(5);
         }
     }

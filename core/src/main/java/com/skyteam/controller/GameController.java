@@ -14,13 +14,12 @@ public class GameController {
     private final com.badlogic.gdx.Game gdxGame;
     private final Game gameLogic;
     private final MainMenuScreen mainMenuScreen;
-    private final GameScreen gameScreen;
+    private GameScreen gameScreen = null;
 
     public GameController(com.badlogic.gdx.Game gdxGame, Game gameLogic) {
         this.gdxGame = gdxGame;
         this.gameLogic = gameLogic;
         this.mainMenuScreen = new MainMenuScreen();
-        this.gameScreen = new GameScreen(this);
         setupListeners();
     }
 
@@ -56,11 +55,17 @@ public class GameController {
 
     private void startGame() {
         gameLogic.startGame();
+        gameScreen = new GameScreen(this);
         gdxGame.setScreen(gameScreen);
+
     }
 
     private void exitGame() {
         com.badlogic.gdx.Gdx.app.exit();
+    }
+
+    public void dropDiceOnLocation(int dieValue, float x, float y) {
+        gameScreen.dropDice(dieValue, x, y);
     }
 
     public MainMenuScreen getMainMenuScreen() {
