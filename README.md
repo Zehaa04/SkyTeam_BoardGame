@@ -3,11 +3,11 @@
 ## Overview
 
 This project is a digital implementation of the cooperative board game **Sky Team**, developed in **Java** using the **libGDX** framework.
-The goal of the project was to design and implement the game logic using a clean software architecture and to build a graphical user interface for the game.
 
-The project was developed as part of a university software engineering project and focuses on object-oriented programming, MVC architecture, game logic implementation, GUI development, and unit testing.
+The main goal of the project was to design and implement the game logic using a clean software architecture and object-oriented design principles. The project focuses on MVC architecture, game logic implementation, GUI development, and unit testing.
 
-Although the project was not fully completed, the core game logic, architecture, and GUI framework were successfully implemented.
+The project was developed as part of a university software engineering course.  
+Although the project was not fully completed, the core game logic, architecture, and overall game flow were successfully implemented.
 
 ---
 
@@ -117,6 +117,19 @@ The class diagram of the system architecture can be found here:
 ```
 Klassendiagramm.png
 ```
+
+The activity diagram of the system architecture can be found here:
+
+```
+AktivitaetsDiagramm.png
+```
+
+## Project Status
+
+The project implements the core game logic, architecture, and game flow.  
+The main focus of the project was software architecture, object-oriented design, and implementation of the game mechanics using the MVC pattern.
+
+The graphical interface and visual polish were not the primary focus of this project, as the main objective was to design and implement a clean and maintainable software architecture.
 
 ## Documentation
 
